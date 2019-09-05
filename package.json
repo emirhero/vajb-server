@@ -1,0 +1,26 @@
+{
+  "name": "vajb-server",
+  "version": "1.0.0",
+  "description": "Back-end API za Vajb",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "serve": "node index.js"
+  },
+  "author": "Emir Hadžimuhamedović",
+  "license": "ISC",
+  "dependencies": {
+    "axios": "^0.18.0",
+    "body-parser": "^1.18.3",
+    "crypto": "^1.0.1",
+    "express": "^4.16.4",
+    "express-jwt": "^5.3.1",
+    "jsonwebtoken": "^8.5.1",
+    "mongo-sanitize": "^1.0.1",
+    "mongoose": "^5.5.2",
+    "passport": "^0.4.0",
+    "passport-jwt": "^4.0.0",
+    "passport-local": "^1.0.0",
+    "uri-js": "^4.2.2"
+  }
+}
