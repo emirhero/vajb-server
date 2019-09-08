@@ -13,7 +13,8 @@ const sanitize = require('mongo-sanitize')
 const uri = require('uri-js') 
 
 // Mongo configuration
-const mongoLink = 'mongodb://overlord:f1bonacci@ds145346.mlab.com:45346/the-brain'
+const oldMongoLink = 'mongodb://overlord:f1bonacci@ds145346.mlab.com:45346/the-brain'
+const mongoLink = 'mongodb://overlord:4mtnvatps@ds319318-a0.mlab.com:19318,ds319318-a1.mlab.com:19318/vajb-brain?replicaSet=rs-ds319318'
 mongoose.connect(mongoLink, { useNewUrlParser: true })
 const db = mongoose.connection
 db.on('error', console.error.bind(console, 'Error connecting to MongoDB: '))
@@ -121,7 +122,14 @@ app.post('/pins', passport.authenticate('jwt', {session: false}), jsonParser, as
 
     //if (body) {
         try {
-            let isLinkValid = await checkLink(req)
+            let isLinkValid
+            console.log(uri.parse(req.body.link).host)
+            if (uri.parse(req.body.link).host == 'www.reddit.com' || 'reddit.com') {
+                isLinkValid = true
+            } else {
+                isLinkValid = await checkLink(req)
+            }
+
             if (isLinkValid) {
                 let newPin = new Pin({
                     pinboard: req.body.pinboard,
@@ -179,8 +187,17 @@ app.post('/pins', passport.authenticate('jwt', {session: false}), jsonParser, as
 })
 
 app.post('/checkLink', jsonParser, async function (req, res) {
+
     try {
-        let isLinkValid = await checkLink(req)
+        console.log('hit here')
+        let isLinkValid
+        console.log(uri.parse(req.body.link).host)
+        if (uri.parse(req.body.link).host == 'www.reddit.com' || 'reddit.com') {
+            res.sendStatus(200)
+        } else {
+            isLinkValid = await checkLink(req)
+        }
+        
         if (isLinkValid) {
             res.sendStatus(200)
         }
@@ -190,8 +207,11 @@ app.post('/checkLink', jsonParser, async function (req, res) {
 })
 
 async function checkLink(req) {
-    const BANNED_MIMES = ['application/octet-stream', 'application/zip', 'application/x-7z-compressed'] 
+    return true
 
+    
+    const BANNED_MIMES = ['application/octet-stream', 'application/zip', 'application/x-7z-compressed'] 
+    console.log('got here')
     let body = sanitize(req.body)
     console.log('and here')
     if (Object.entries(body).length === 0) {
@@ -199,20 +219,15 @@ async function checkLink(req) {
     } else {
         // Request is valid
         // We can now check if the link's header passes validation
-        try {/*
+        try {
             let head = await axios.head(body.link)
+            console.log(head)
             let status = head.status
             let headers = head.headers
 
             if (!status) {
                 throw new Error('Nešto se sjebalo i nismo mogli do tvog linka.')
             }
-            
-            let hostname = uri.parse(body.link).host
-            if (hostname === 'www.reddit.com') {
-                // Reddit has a funky behavior history with this function
-                return true
-            } 
 
             if (!status === 200) {
                 throw new Error('Nešto se sjebalo i nismo mogli do tvog linka.')
@@ -225,8 +240,7 @@ async function checkLink(req) {
                 } else {
                     throw new Error('Ne podržavamo ovaj tip linkova.')
                 }
-            }*/
-            return true
+            }
         } catch (error) {
             throw new Error(error)
         }
