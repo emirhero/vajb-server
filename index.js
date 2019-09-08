@@ -204,7 +204,14 @@ async function checkLink(req) {
             let status = head.status
             let headers = head.headers
 
-            if (!status === 200) {
+            if (!status) {
+                throw new Error('Nešto se sjebalo i nismo mogli do tvog linka.')
+            }
+            // Reddit throws out a 502 for some reason
+            if (status === 502 && uri.parse(body.link).hostname === 'reddit.com') {
+                return true
+            }
+            else if (!status === 200) {
                 throw new Error('Nešto se sjebalo i nismo mogli do tvog linka.')
             } else {
                 let contentType = headers['content-type'].split(';')
