@@ -193,7 +193,7 @@ async function checkLink(req) {
     const BANNED_MIMES = ['application/octet-stream', 'application/zip', 'application/x-7z-compressed'] 
 
     let body = sanitize(req.body)
-
+    console.log('and here')
     if (Object.entries(body).length === 0) {
         throw new Error('Nešto se sjebalo i nismo mogli do tvog linka.')
     } else {
@@ -207,13 +207,16 @@ async function checkLink(req) {
             if (!status) {
                 throw new Error('Nešto se sjebalo i nismo mogli do tvog linka.')
             }
-            // Reddit throws out a 502 for some reason
-            if (status === 502 && uri.parse(body.link).hostname === 'reddit.com') {
-                return true
-            }
-            else if (!status === 200) {
+            
+            let hostname = uri.parse(body.link).host
+            if (!status === 200) {
                 throw new Error('Nešto se sjebalo i nismo mogli do tvog linka.')
             } else {
+                if (hostname === 'www.reddit.com') {
+                    // Reddit has a funky behavior history with this function
+                    return true
+                } 
+
                 let contentType = headers['content-type'].split(';')
                 console.log(contentType)
                 if (BANNED_MIMES.indexOf(contentType) === -1) {
@@ -223,7 +226,7 @@ async function checkLink(req) {
                 }
             }
         } catch (error) {
-            throw new Error('Nešto se sjebalo i nismo mogli do tvog linka.')
+            throw new Error(error)
         }
     }
 }
