@@ -209,13 +209,14 @@ async function checkLink(req) {
             }
             
             let hostname = uri.parse(body.link).host
+            if (hostname === 'www.reddit.com') {
+                // Reddit has a funky behavior history with this function
+                return true
+            } 
+            
             if (!status === 200) {
                 throw new Error('Nešto se sjebalo i nismo mogli do tvog linka.')
             } else {
-                if (hostname === 'www.reddit.com') {
-                    // Reddit has a funky behavior history with this function
-                    return true
-                } 
 
                 let contentType = headers['content-type'].split(';')
                 console.log(contentType)
