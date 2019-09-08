@@ -199,7 +199,7 @@ async function checkLink(req) {
     } else {
         // Request is valid
         // We can now check if the link's header passes validation
-        try {
+        try {/*
             let head = await axios.head(body.link)
             let status = head.status
             let headers = head.headers
@@ -213,7 +213,7 @@ async function checkLink(req) {
                 // Reddit has a funky behavior history with this function
                 return true
             } 
-            
+
             if (!status === 200) {
                 throw new Error('Nešto se sjebalo i nismo mogli do tvog linka.')
             } else {
@@ -225,7 +225,8 @@ async function checkLink(req) {
                 } else {
                     throw new Error('Ne podržavamo ovaj tip linkova.')
                 }
-            }
+            }*/
+            return true
         } catch (error) {
             throw new Error(error)
         }
